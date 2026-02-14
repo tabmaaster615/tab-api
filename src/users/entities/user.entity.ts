@@ -23,11 +23,11 @@ export class User {
   @Column({ type: 'varchar', length: 200, nullable: false })
   institution: string;
 
-  @Column({ length: 11, nullable: false })
+  @Column({ length: 20, nullable: false })
   phone: string;
 
-  @Column({ unique: true, nullable: false })
   @Index()
+  @Column({ unique: true, nullable: false })
   email: string;
 
   @Column({ name: 'password_hash', nullable: false })
@@ -40,14 +40,13 @@ export class User {
     () => UserTournamentRole,
     (userTournamentRole) => userTournamentRole.user,
     {
-      onDelete: 'CASCADE',
+      cascade: false,
     },
   )
   tournamentRoles: UserTournamentRole[];
 
   @CreateDateColumn({
     name: 'created_at',
-    nullable: false,
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
@@ -55,7 +54,6 @@ export class User {
 
   @UpdateDateColumn({
     name: 'updated_at',
-    nullable: false,
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })

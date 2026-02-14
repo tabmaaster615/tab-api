@@ -3,10 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('permissions')
+@Unique(['permissionName'])
 export class Permission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -24,7 +26,6 @@ export class Permission {
 
   @CreateDateColumn({
     name: 'created_at',
-    nullable: false,
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
@@ -32,7 +33,6 @@ export class Permission {
 
   @UpdateDateColumn({
     name: 'updated_at',
-    nullable: false,
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })

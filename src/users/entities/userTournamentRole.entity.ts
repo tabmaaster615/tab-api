@@ -10,23 +10,25 @@ import { User } from './user.entity';
 import { Role } from './role.entity';
 
 @Entity('user_tournament_roles')
-@Unique(['user', 'role', 'tournament'])
+@Unique(['user', 'role', 'tournamentId'])
 export class UserTournamentRole {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE', nullable: false })
+  @ManyToOne(() => User, (user) => user.tournamentRoles, {
+    onDelete: 'CASCADE',
+  })
   user: User;
 
-  @ManyToOne(() => Role, { onDelete: 'CASCADE', nullable: false })
+  @ManyToOne(() => Role, { eager: true, onDelete: 'CASCADE' })
   role: Role;
 
-  //   @ManyToOne(() => Tournament, { nullable: true })
-  //   tournament: Tournament;
+  // null = global role
+  // later this becomes ManyToOne(() => Tournament)
+  tournamentId: string | null;
 
   @CreateDateColumn({
     name: 'created_at',
-    nullable: false,
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
@@ -34,7 +36,6 @@ export class UserTournamentRole {
 
   @UpdateDateColumn({
     name: 'updated_at',
-    nullable: false,
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
