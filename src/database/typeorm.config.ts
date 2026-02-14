@@ -7,7 +7,7 @@ export const getTypeOrmConfig = (
   type: 'postgres',
   url: configService.get<string>('database.url'),
   ssl: configService.get<boolean>('database.ssl')
-    ? { rejectUnauthorized: false }
+    ? { rejectUnauthorized: true }
     : false,
 
   autoLoadEntities: true,
@@ -16,6 +16,11 @@ export const getTypeOrmConfig = (
   migrationsRun: true,
 
   logging: configService.get<string>('app.env') === 'development',
-
   migrations: [__dirname + '/migrations/*{.ts,.js}'],
+
+  extra: configService.get<boolean>('database.ssl')
+    ? {
+        uselibpqcompat: true,
+      }
+    : {},
 });
