@@ -4,83 +4,85 @@ We move in this order:
 
 🟢 STEP 1 — Fix Entities Properly
 
-Before anything else:
+- Before anything else:
 
-Fix Role entity naming
+- Fix Role entity naming
 
-Add JoinTable
+- Add JoinTable
 
-Add unique constraints
+- Add unique constraints
 
-Increase phone length
+- Increase phone length
 
-Remove institution from User
+- Remove institution from User
 
-Generate migration.
+- Generate migration.
 
-Run migration.
+- Run migration.
 
-This locks schema cleanly.
+- This locks schema cleanly.
 
 🟢 STEP 2 — Seed Initial Roles & Permissions
 
-Professional systems:
+- Professional systems:
 
-Don’t manually insert roles.
+- Don’t manually insert roles.
 
-Use a seed script.
+- Use a seed script.
 
 Seed:
 
-Permissions:
+- Permissions:
 
-CREATE_TOURNAMENT
+- CREATE_TOURNAMENT
 
-EDIT_TOURNAMENT
+- EDIT_TOURNAMENT
 
-MANAGE_ROUNDS
+- MANAGE_ROUNDS
 
-ASSIGN_ADJUDICATORS
+- ASSIGN_ADJUDICATORS
 
-SUBMIT_BALLOT
+- SUBMIT_BALLOT
 
-VIEW_PUBLIC_STANDINGS
+- VIEW_PUBLIC_STANDINGS
 
 Roles:
 
-SUPER_ADMIN
+- SUPER_ADMIN
 
-TOURNAMENT_ADMIN
+- TOURNAMENT_ADMIN
 
-TAB_DIRECTOR
+- TAB_DIRECTOR
 
-ADJUDICATOR
+- ADJUDICATOR
 
-SPEAKER
+- SPEAKER
 
-Attach permissions to roles.
+- Attach permissions to roles.
 
 🟢 STEP 3 — Build UsersService (Domain Logic)
 
-Not controller yet.
+- Not controller yet.
 
 Service should:
 
-Create user (hash password)
+- Create user (hash password)
 
-Assign role
+- Assign role
 
-Get user with roles & permissions
+- Get user with roles & permissions
 
-Check if user has permission (core method)
+- Check if user has permission (core method)
 
 Important method:
 
+```
 async userHasPermission(
 userId: string,
 permission: string,
 tournamentId?: string
 )
+```
 
 This becomes foundation of your entire security layer.
 
@@ -88,21 +90,21 @@ This becomes foundation of your entire security layer.
 
 Only after:
 
-Users exist
+- Users exist
 
-Roles exist
+- Roles exist
 
-Password hashing exists
+- Password hashing exists
 
 🟢 STEP 5 — Build Permission Guard
 
 Custom guard that:
 
-Extracts user from JWT
+- Extracts user from JWT
 
-Checks permission via UsersService
+- Checks permission via UsersService
 
-Blocks access if not allowed
+- Blocks access if not allowed
 
 This becomes your RBAC enforcement.
 

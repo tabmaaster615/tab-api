@@ -10,7 +10,7 @@ import { User } from './user.entity';
 import { Role } from './role.entity';
 
 @Entity('user_tournament_roles')
-@Unique(['user', 'role', 'tournamentId'])
+@Unique(['user', 'role'])
 export class UserTournamentRole {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -22,10 +22,6 @@ export class UserTournamentRole {
 
   @ManyToOne(() => Role, { eager: true, onDelete: 'CASCADE' })
   role: Role;
-
-  // null = global role
-  // later this becomes ManyToOne(() => Tournament)
-  tournamentId: string | null;
 
   @CreateDateColumn({
     name: 'created_at',
