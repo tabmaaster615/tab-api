@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Permission } from './permission.entity';
 
 @Entity('roles')
 export class Role {
@@ -14,8 +16,8 @@ export class Role {
   @Column({ nullable: false, length: 20 })
   role: string;
 
-  @Column({ nullable: false })
-  permissions: string;
+  @ManyToMany(() => Permission)
+  permissions: Permission[];
 
   @CreateDateColumn({
     name: 'created_at',

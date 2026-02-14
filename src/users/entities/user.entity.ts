@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { UserTournamentRole } from './userTournamentRole.entity';
 
 @Entity('users')
 export class User {
@@ -32,8 +34,14 @@ export class User {
   @Column({ name: 'is_active', nullable: false, default: true })
   isActive: boolean;
 
-  @Column()
-  tournmentRoles: string;
+  @OneToMany(
+    () => UserTournamentRole,
+    (userTournamentRole) => userTournamentRole.user,
+    {
+      onDelete: 'CASCADE',
+    },
+  )
+  tournamentRoles: UserTournamentRole[];
 
   @CreateDateColumn({
     name: 'created_at',
