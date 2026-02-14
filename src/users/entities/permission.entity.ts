@@ -11,7 +11,12 @@ export class Permission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'permission_name', nullable: false, length: 20 })
+  @Column({
+    name: 'permission_name',
+    nullable: false,
+    unique: true,
+    length: 50,
+  })
   permissionName: string;
 
   @Column({ name: 'permission_desc', nullable: false })

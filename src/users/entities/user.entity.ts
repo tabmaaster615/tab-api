@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -26,6 +27,7 @@ export class User {
   phone: string;
 
   @Column({ unique: true, nullable: false })
+  @Index()
   email: string;
 
   @Column({ name: 'password_hash', nullable: false })

@@ -1,27 +1,28 @@
 import {
-  Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Role } from './role.entity';
 
 @Entity('user_tournament_roles')
+@Unique(['user', 'role', 'tournament'])
 export class UserTournamentRole {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE', nullable: false })
   user: User;
 
-  @ManyToOne(() => Role)
+  @ManyToOne(() => Role, { onDelete: 'CASCADE', nullable: false })
   role: Role;
 
-  @Column({ nullable: true }) // null = global role
-  tournamentId: string;
+  //   @ManyToOne(() => Tournament, { nullable: true })
+  //   tournament: Tournament;
 
   @CreateDateColumn({
     name: 'created_at',
