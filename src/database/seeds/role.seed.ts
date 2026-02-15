@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
-import { Role } from '../entities/role.entity';
-import { Permission } from '../entities/permission.entity';
+import { Role } from '../../users/entities/role.entity';
+import { Permission } from '../../users/entities/permission.entity';
 
 export const seedRoles = async (dataSource: DataSource) => {
   const roleRepo = dataSource.getRepository(Role);
