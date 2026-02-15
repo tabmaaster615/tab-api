@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -37,6 +41,35 @@ export class UsersService {
 
     const savedUser = await this.userRepo.save(newUser);
     return plainToInstance(ResponseUserDto, savedUser, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async findAllUser(): Promise<ResponseUserDto[]> {
+    const allUsers = await this.userRepo.find();
+    if (allUsers.length === 0) throw new BadRequestException('No users found!');
+
+    return allUsers.map((user) =>
+      plainToInstance(ResponseUserDto, user, {
+        excludeExtraneousValues: true,
+      }),
+    );
+  }
+
+  async findOneUser(id: string): Promise<ResponseUserDto> {
+    const findUser = await this.userRepo.findOne({ where: { id } });
+    if (!findUser) throw new NotFoundException('User not found!');
+
+    return plainToInstance(ResponseUserDto, findUser, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async findByEmail(email: string): Promise<ResponseUserDto> {
+    const findUser = await this.userRepo.findOne({ where: { email } });
+    if (!findUser) throw new NotFoundException('User not found!');
+
+    return plainToInstance(ResponseUserDto, findUser, {
       excludeExtraneousValues: true,
     });
   }
