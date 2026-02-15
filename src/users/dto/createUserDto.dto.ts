@@ -30,13 +30,13 @@ export class CreateUserDto {
   })
   @IsString()
   @IsNotEmpty()
-  institute: string;
+  institution: string;
 
   @ApiProperty({
     description: 'Phone number of the user',
     example: '1234567890',
   })
-  @IsEmail()
+  @IsString()
   @IsNotEmpty()
   @MaxLength(20)
   phone: string;
@@ -45,7 +45,7 @@ export class CreateUserDto {
     description: 'Email of the user',
     example: 'demo@email.com',
   })
-  @IsString()
+  @IsEmail()
   @IsNotEmpty()
   email: string;
 

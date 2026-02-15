@@ -8,9 +8,14 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { UserTournamentRole } from './userTournamentRole.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('users')
 export class User {
+  @ApiProperty({
+    description: 'The unique identifier (UUID) of the user',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -31,7 +36,7 @@ export class User {
   email: string;
 
   @Column({ name: 'password_hash', nullable: false, select: false })
-  passwordHash: string;
+  password: string;
 
   @Column({ name: 'is_active', nullable: false, default: true })
   isActive: boolean;

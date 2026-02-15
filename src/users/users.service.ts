@@ -36,7 +36,7 @@ export class UsersService {
 
     const newUser = this.userRepo.create({
       ...dto,
-      passwordHash: hashedPassword,
+      password: hashedPassword,
     });
 
     const savedUser = await this.userRepo.save(newUser);
@@ -73,4 +73,6 @@ export class UsersService {
       excludeExtraneousValues: true,
     });
   }
+
+  // async updateUser(id: string, dto: UpdateUserDto): Promise<ResponseUserDto> {}
 }
