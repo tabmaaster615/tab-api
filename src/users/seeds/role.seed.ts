@@ -1,7 +1,6 @@
 import { DataSource } from 'typeorm';
 import { Role } from '../entities/role.entity';
 import { Permission } from '../entities/permission.entity';
-import { permission } from 'process';
 
 export const seedRoles = async (dataSource: DataSource) => {
   const roleRepo = dataSource.getRepository(Role);
@@ -73,16 +72,18 @@ export const seedRoles = async (dataSource: DataSource) => {
       where: {
         name: roleData.name,
       },
+      relations: ['permissions'],
     });
 
     if (!role) {
-      role = roleRepo.create({
-        name: roleData.name,
-        permissions: roleData.permissions,
-      });
+      role = roleRepo.create(roleData);
       await roleRepo.save(role);
+    } else {
+      role.permissions = roleData.permissions;
     }
-    console.log(`${roleData.name} has been seeded successfully...`);
+
+    await roleRepo.save(role);
+    console.log(`Role ${roleData.name} has been seeded successfully...`);
   }
 
   console.log('Roles seeded successfully...');
