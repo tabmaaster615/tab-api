@@ -23,6 +23,9 @@ export class UserTournamentRole {
   @ManyToOne(() => Role, { eager: true, onDelete: 'CASCADE' })
   role: Role;
 
+  // @ManyToOne(() => Tournament, { eager: true, onDelete: 'CASCADE' })
+  // tournament: Tournament;
+
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamptz',

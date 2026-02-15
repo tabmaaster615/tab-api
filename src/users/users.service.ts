@@ -13,6 +13,7 @@ import { UserTournamentRole } from './entities/userTournamentRole.entity';
 import { ResponseUserDto } from './dto/responseUserDto.dto';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
+import { UpdateUserDto } from './dto/updateUserDto.dto';
 
 @Injectable()
 export class UsersService {
@@ -38,8 +39,23 @@ export class UsersService {
       ...dto,
       password: hashedPassword,
     });
-
     const savedUser = await this.userRepo.save(newUser);
+
+    // assign default role to newUser
+    const defaultRole = await this.roleRepo.findOne({
+      where: { name: 'DEBATER' },
+    });
+    if (!defaultRole)
+      throw new Error('Default DEBTER role not seeded properly.');
+
+    const userRole = this.userTournamentRoleRepo.create({
+      user: savedUser,
+      role: defaultRole,
+      // tournament: null,
+    });
+
+    await this.userTournamentRoleRepo.save(userRole);
+
     return plainToInstance(ResponseUserDto, savedUser, {
       excludeExtraneousValues: true,
     });
@@ -74,5 +90,32 @@ export class UsersService {
     });
   }
 
-  // async updateUser(id: string, dto: UpdateUserDto): Promise<ResponseUserDto> {}
+  async updateUser(id: string, dto: UpdateUserDto): Promise<ResponseUserDto> {
+    const findUser = await this.userRepo.findOne({ where: { id } });
+    if (!findUser) throw new NotFoundException('User not found!');
+
+    if (dto.email && dto.email !== findUser.email) {
+      const existingEmail = await this.userRepo.findOne({
+        where: { email: dto.email },
+      });
+      if (existingEmail)
+        throw new BadRequestException('This email is already used!');
+      findUser.email = dto.email;
+    }
+
+    if (dto.password) {
+      const hashedPassword = await bcrypt.hash(dto.password, 12);
+      findUser.password = hashedPassword;
+    }
+
+    if (dto.firstName) findUser.firstName = dto.firstName;
+    if (dto.lastName) findUser.lastName = dto.lastName;
+    if (dto.institution) findUser.institution = dto.institution;
+    if (dto.phone) findUser.phone = dto.phone;
+
+    const updatedUser = await this.userRepo.save(findUser);
+    return plainToInstance(ResponseUserDto, updatedUser, {
+      excludeExtraneousValues: true,
+    });
+  }
 }
