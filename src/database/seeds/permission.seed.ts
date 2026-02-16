@@ -54,8 +54,68 @@ export const seedPermissions = async (dataSource: DataSource) => {
       permissionDesc: 'Submit ballot for debate',
     },
     {
+      permissionName: 'VIEW_BALLOT',
+      permissionDesc: 'View ballot for debate',
+    },
+    {
+      permissionName: 'VIEW_TEAM_STANDINGS',
+      permissionDesc: 'View team standings',
+    },
+    {
+      permissionName: 'VIEW_DEBATER_STANDINGS',
+      permissionDesc: 'View debater standings',
+    },
+    {
+      permissionName: 'VIEW_ADJUDICATOR_STANDINGS',
+      permissionDesc: 'View adjudicator standings',
+    },
+    {
+      permissionName: 'VIEW_BREAKS',
+      permissionDesc: 'View breaks',
+    },
+    {
+      permissionName: 'VIEW_RESULTS',
+      permissionDesc: 'View results',
+    },
+    {
+      permissionName: 'VIEW_DASHBOARD',
+      permissionDesc: 'View dashboard',
+    },
+    {
       permissionName: 'VIEW_PUBLIC_STANDINGS',
       permissionDesc: 'View public standings',
+    },
+    {
+      permissionName: 'VIEW_ALL_BALLOTS',
+      permissionDesc: 'View all ballots',
+    },
+    {
+      permissionName: 'VIEW_ALL_TEAMS',
+      permissionDesc: 'View all teams',
+    },
+    {
+      permissionName: 'VIEW_ALL_DEBATERS',
+      permissionDesc: 'View all debaters',
+    },
+    {
+      permissionName: 'VIEW_ALL_ADJUDICATORS',
+      permissionDesc: 'View all adjudicators',
+    },
+    {
+      permissionName: 'VIEW_ALL_BREAKS',
+      permissionDesc: 'View all breaks',
+    },
+    {
+      permissionName: 'VIEW_ALL_RESULTS',
+      permissionDesc: 'View all results',
+    },
+    {
+      permissionName: 'VIEW_ALL_DASHBOARD',
+      permissionDesc: 'View all dashboard',
+    },
+    {
+      permissionName: 'VIEW_ALL_PUBLIC_STANDINGS',
+      permissionDesc: 'View all public standings',
     },
   ];
 
