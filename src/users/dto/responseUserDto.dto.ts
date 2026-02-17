@@ -4,59 +4,43 @@ import { RoleResponseDto } from './roleResponseDto.dto';
 
 export class ResponseUserDto {
   @ApiProperty({
-    description: 'ID of the user, this is a UUID',
+    description: 'UUID of the user',
     example: '123e4567-e89b-12d3-a456-426614174000',
+    format: 'uuid',
   })
   @Expose()
   id: string;
 
-  @ApiProperty({
-    description: 'First name of the user',
-    example: 'John',
-  })
+  @ApiProperty({ example: 'John' })
   @Expose()
   firstName: string;
 
-  @ApiProperty({
-    description: 'Last name of the user',
-    example: 'Doe',
-  })
+  @ApiProperty({ example: 'Doe' })
   @Expose()
   lastName: string;
 
-  @ApiProperty({
-    description: 'Institute of the user',
-    example: 'Harvard University',
-  })
+  @ApiProperty({ example: 'Harvard University' })
   @Expose()
-  institute: string;
+  institution: string; // Fixed name to match CreateUserDto
 
-  @ApiProperty({
-    description: 'Phone number of the user',
-    example: '+1234567890',
-  })
+  @ApiProperty({ example: '+1234567890' })
   @Expose()
   phone: string;
 
-  @ApiProperty({
-    description: 'Email of the user',
-    example: 'jone.doe@mail.com',
-  })
+  @ApiProperty({ example: 'john.doe@mail.com' })
   @Expose()
   email: string;
 
   @ApiProperty({
-    description: 'Role of the user',
-    example: 'admin',
+    description: 'User permission level',
+    example: 'user',
+    enum: ['admin', 'user', 'moderator'],
   })
   @Expose()
   @Type(() => RoleResponseDto)
   role: RoleResponseDto;
 
-  @ApiProperty({
-    description: 'The status of the user. Is the user active?',
-    example: true,
-  })
+  @ApiProperty({ description: 'Account status', example: true })
   @Expose()
   isActive: boolean;
 }

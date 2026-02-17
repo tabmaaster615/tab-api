@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 import { Role } from '../../users/entities/role.entity';
 import { Permission } from '../../users/entities/permission.entity';
+import { permission } from 'process';
 
 export const seedRoles = async (dataSource: DataSource) => {
   const roleRepo = dataSource.getRepository(Role);
@@ -64,6 +65,12 @@ export const seedRoles = async (dataSource: DataSource) => {
     {
       name: 'SPEAKER',
       permissions: getPermissions(['VIEW_PUBLIC_STANDINGS']),
+    },
+    {
+      name: 'DEBATER',
+      permissions: getPermissions([
+        'VIEW_PUBLIC_STANDINGS, VIEW_BREAKS, VIEW_RESULTS',
+      ]),
     },
   ];
 

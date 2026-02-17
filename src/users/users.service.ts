@@ -118,4 +118,12 @@ export class UsersService {
       excludeExtraneousValues: true,
     });
   }
+
+  async deleteUser(id: string): Promise<{ message: string }> {
+    const findUser = await this.userRepo.findOne({ where: { id } });
+    if (!findUser) throw new NotFoundException('User not found!');
+
+    await this.userRepo.remove(findUser);
+    return { message: 'The user has been deleted successfully!' };
+  }
 }
