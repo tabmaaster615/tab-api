@@ -29,6 +29,11 @@ export class UsersService {
   async createUser(dto: CreateUserDto): Promise<ResponseUserDto> {
     const existingUser = await this.userRepo.findOne({
       where: { email: dto.email },
+      relations: {
+        tournamentRoles: {
+          role: true,
+        },
+      },
     });
     if (existingUser)
       throw new BadRequestException('This email is already used!');
