@@ -61,6 +61,28 @@ export class UsersService {
     });
   }
 
+  async assignRoleToUser(
+    userId: string,
+    roleId: string,
+  ): Promise<ResponseUserDto> {
+    const findUser = await this.userRepo.findOne({ where: { id: userId } });
+    if (!findUser) throw new NotFoundException('User not found!');
+
+    const findRole = await this.roleRepo.findOne({ where: { id: roleId } });
+    if (!findRole) throw new NotFoundException('Role not found!');
+
+    const setRole = this.userTournamentRoleRepo.create({
+      user: findUser,
+      role: findRole,
+    });
+
+    await this.userTournamentRoleRepo.save(setRole);
+
+    return plainToInstance(ResponseUserDto, findUser, {
+      excludeExtraneousValues: true,
+    });
+  }
+
   async findAllUser(): Promise<ResponseUserDto[]> {
     const allUsers = await this.userRepo.find();
     if (allUsers.length === 0) throw new BadRequestException('No users found!');

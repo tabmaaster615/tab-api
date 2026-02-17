@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
-import { RoleResponseDto } from './roleResponseDto.dto';
+import { Expose } from 'class-transformer';
 
 export class ResponseUserDto {
   @ApiProperty({
@@ -37,8 +36,7 @@ export class ResponseUserDto {
     enum: ['admin', 'user', 'moderator'],
   })
   @Expose()
-  @Type(() => RoleResponseDto)
-  role: RoleResponseDto;
+  role: string;
 
   @ApiProperty({ description: 'Account status', example: true })
   @Expose()
