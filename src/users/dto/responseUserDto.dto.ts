@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
+import { RoleResponseDto } from './roleResponseDto.dto';
 
 export class ResponseUserDto {
   @ApiProperty({
@@ -49,7 +50,8 @@ export class ResponseUserDto {
     example: 'admin',
   })
   @Expose()
-  role: string;
+  @Type(() => RoleResponseDto)
+  role: RoleResponseDto;
 
   @ApiProperty({
     description: 'The status of the user. Is the user active?',
