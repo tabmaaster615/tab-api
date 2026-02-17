@@ -32,11 +32,13 @@ export class ResponseUserDto {
 
   @ApiProperty({
     description: 'User permission level',
-    example: 'user',
-    enum: ['admin', 'user', 'moderator'],
+    example: 'DEBATER',
   })
   @Expose()
-  role: string;
+  role: {
+    name: string;
+    tournamentId: string | null;
+  };
 
   @ApiProperty({ description: 'Account status', example: true })
   @Expose()
