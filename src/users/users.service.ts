@@ -105,9 +105,12 @@ export class UsersService {
     const allUsers = await this.userRepo.find();
     if (allUsers.length === 0) throw new BadRequestException('No users found!');
 
-    return allUsers.map((user) =>
-      plainToInstance(ResponseUserDto, user, {
-        excludeExtraneousValues: true,
+    return Promise.all(
+      allUsers.map(async (user) => {
+        const userWithRole = await this.getFullUserInfo(user.id);
+        return plainToInstance(ResponseUserDto, userWithRole, {
+          excludeExtraneousValues: true,
+        });
       }),
     );
   }
@@ -116,7 +119,9 @@ export class UsersService {
     const findUser = await this.userRepo.findOne({ where: { id } });
     if (!findUser) throw new NotFoundException('User not found!');
 
-    return plainToInstance(ResponseUserDto, findUser, {
+    const userWithRole = await this.getFullUserInfo(findUser.id);
+
+    return plainToInstance(ResponseUserDto, userWithRole, {
       excludeExtraneousValues: true,
     });
   }
