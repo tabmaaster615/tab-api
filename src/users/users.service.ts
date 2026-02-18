@@ -43,10 +43,9 @@ export class UsersService {
 
     // assign default role to newUser
     const defaultRole = await this.roleRepo.findOne({
-      where: { name: 'DEBATER' },
+      where: { name: 'USER' },
     });
-    if (!defaultRole)
-      throw new Error('Default DEBTER role not seeded properly.');
+    if (!defaultRole) throw new Error('Default USER role not seeded properly.');
 
     await this.userTournamentRoleRepo.save({
       user: savedUser,
@@ -71,6 +70,7 @@ export class UsersService {
     const setRole = this.userTournamentRoleRepo.create({
       user: findUser,
       role: findRole,
+      // tournamentId: null,
     });
 
     await this.userTournamentRoleRepo.save(setRole);

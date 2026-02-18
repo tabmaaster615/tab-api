@@ -44,6 +44,24 @@ export class UsersController {
     return await this.usersService.createUser(dto);
   }
 
+  @Post('assign-role')
+  @ApiOperation({
+    summary: 'Assign a role to a user',
+    description: 'Assigns a role to a user.',
+  })
+  @ApiCreatedResponse({
+    type: ResponseUserDto,
+    description: 'Role assigned successfully.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid input data or role not found.',
+  })
+  async assignRoleToUser(
+    @Body() dto: { userId: string; roleId: string },
+  ): Promise<ResponseUserDto> {
+    return await this.usersService.assignRoleToUser(dto.userId, dto.roleId);
+  }
+
   @Get()
   @ApiOperation({
     summary: 'Get all users',
