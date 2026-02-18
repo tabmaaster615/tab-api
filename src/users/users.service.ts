@@ -29,6 +29,11 @@ export class UsersService {
   async createUser(dto: CreateUserDto): Promise<ResponseUserDto> {
     const existingUser = await this.userRepo.findOne({
       where: { email: dto.email },
+      relations: {
+        tournamentRoles: {
+          role: true,
+        },
+      },
     });
     if (existingUser)
       throw new BadRequestException('This email is already used!');
@@ -57,6 +62,28 @@ export class UsersService {
     await this.userTournamentRoleRepo.save(userRole);
 
     return plainToInstance(ResponseUserDto, savedUser, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async assignRoleToUser(
+    userId: string,
+    roleId: string,
+  ): Promise<ResponseUserDto> {
+    const findUser = await this.userRepo.findOne({ where: { id: userId } });
+    if (!findUser) throw new NotFoundException('User not found!');
+
+    const findRole = await this.roleRepo.findOne({ where: { id: roleId } });
+    if (!findRole) throw new NotFoundException('Role not found!');
+
+    const setRole = this.userTournamentRoleRepo.create({
+      user: findUser,
+      role: findRole,
+    });
+
+    await this.userTournamentRoleRepo.save(setRole);
+
+    return plainToInstance(ResponseUserDto, findUser, {
       excludeExtraneousValues: true,
     });
   }
