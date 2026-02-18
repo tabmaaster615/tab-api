@@ -126,11 +126,27 @@ export class UsersService {
     });
   }
 
+  async findUserWithRolesAndPermissions(id: string): Promise<User> {
+    const findUser = await this.userRepo.findOne({
+      where: { id },
+      relations: [
+        'tournamentRoles',
+        'tournamentRoles.role',
+        'tournamentRoles.role.permissions',
+      ],
+    });
+    if (!findUser) throw new NotFoundException('User not found!');
+
+    return findUser;
+  }
+
   async findByEmail(email: string): Promise<ResponseUserDto> {
     const findUser = await this.userRepo.findOne({ where: { email } });
     if (!findUser) throw new NotFoundException('User not found!');
 
-    return plainToInstance(ResponseUserDto, findUser, {
+    const userWithRole = await this.getFullUserInfo(findUser.id);
+
+    return plainToInstance(ResponseUserDto, userWithRole, {
       excludeExtraneousValues: true,
     });
   }
