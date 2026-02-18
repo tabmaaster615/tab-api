@@ -1,4 +1,5 @@
 import {
+  Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
@@ -25,6 +26,9 @@ export class UserTournamentRole {
 
   // @ManyToOne(() => Tournament, { eager: true, onDelete: 'CASCADE' })
   // tournament: Tournament;
+
+  @Column({ name: 'tournament_id', nullable: true, type: 'varchar' })
+  tournamentId: string | null;
 
   @CreateDateColumn({
     name: 'created_at',

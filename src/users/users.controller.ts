@@ -22,6 +22,7 @@ import { UsersService } from './users.service';
 import { ResponseUserDto } from './dto/responseUserDto.dto';
 import { CreateUserDto } from './dto/createUserDto.dto';
 import { UpdateUserDto } from './dto/updateUserDto.dto';
+import { AssignRoleDto } from './dto/asssignRoleDto.dto';
 
 @ApiTags('Users') // Capitalized for better UI presentation
 @Controller('users')
@@ -56,10 +57,8 @@ export class UsersController {
   @ApiBadRequestResponse({
     description: 'Invalid input data or role not found.',
   })
-  async assignRoleToUser(
-    @Body() dto: { userId: string; roleId: string },
-  ): Promise<ResponseUserDto> {
-    return await this.usersService.assignRoleToUser(dto.userId, dto.roleId);
+  async assignRoleToUser(@Body() dto: AssignRoleDto): Promise<ResponseUserDto> {
+    return await this.usersService.assignRoleToUser(dto);
   }
 
   @Get()

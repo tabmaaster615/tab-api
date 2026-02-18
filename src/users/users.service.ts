@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/createUserDto.dto';
 import { Role } from './entities/role.entity';
 import { Permission } from './entities/permission.entity';
@@ -14,6 +14,7 @@ import { ResponseUserDto } from './dto/responseUserDto.dto';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { UpdateUserDto } from './dto/updateUserDto.dto';
+import { AssignRoleDto } from './dto/asssignRoleDto.dto';
 
 @Injectable()
 export class UsersService {
@@ -57,31 +58,27 @@ export class UsersService {
     });
   }
 
-  async assignRoleToUser(
-    userId: string,
-    roleId: string,
-  ): Promise<ResponseUserDto> {
-    const findUser = await this.userRepo.findOne({ where: { id: userId } });
+  async assignRoleToUser(dto: AssignRoleDto): Promise<ResponseUserDto> {
+    const findUser = await this.userRepo.findOne({ where: { id: dto.userId } });
     if (!findUser) throw new NotFoundException('User not found!');
 
-    const findRole = await this.roleRepo.findOne({ where: { id: roleId } });
+    const findRole = await this.roleRepo.findOne({ where: { id: dto.roleId } });
     if (!findRole) throw new NotFoundException('Role not found!');
 
     const existingRole = await this.userTournamentRoleRepo.findOne({
       where: {
         user: { id: findUser.id },
         role: { id: findRole.id },
-        // tournamentId: { id },
+        tournamentId: dto.tournamentId === null ? IsNull() : dto.tournamentId,
       },
     });
     if (existingRole) throw new BadRequestException('Role already assigned!');
 
-    const setRole = this.userTournamentRoleRepo.create({
+    const setRole = await this.userTournamentRoleRepo.create({
       user: findUser,
       role: findRole,
-      // tournamentId: null,
+      tournamentId: dto.tournamentId,
     });
-
     await this.userTournamentRoleRepo.save(setRole);
 
     return plainToInstance(ResponseUserDto, findUser, {
