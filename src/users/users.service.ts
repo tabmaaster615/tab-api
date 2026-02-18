@@ -61,6 +61,7 @@ export class UsersService {
     await this.userTournamentRoleRepo.save({
       user: savedUser,
       role: defaultRole,
+      tournamentId: null,
     });
 
     const fullUserInfo = await this.getFullUserInfo(savedUser.id);
