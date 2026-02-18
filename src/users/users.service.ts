@@ -61,7 +61,15 @@ export class UsersService {
 
     await this.userTournamentRoleRepo.save(userRole);
 
-    return plainToInstance(ResponseUserDto, savedUser, {
+    const userWithRole = {
+      ...savedUser,
+      roles: savedUser.tournamentRoles.map((tr) => ({
+        name: tr.role.name,
+        // tournamentId: tr.tournamentId,
+      })),
+    };
+
+    return plainToInstance(ResponseUserDto, userWithRole, {
       excludeExtraneousValues: true,
     });
   }
