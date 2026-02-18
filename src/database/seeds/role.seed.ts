@@ -72,6 +72,14 @@ export const seedRoles = async (dataSource: DataSource) => {
         'VIEW_PUBLIC_STANDINGS, VIEW_BREAKS, VIEW_RESULTS',
       ]),
     },
+    {
+      name: 'USER',
+      permissions: getPermissions([
+        'VIEW_PUBLIC_STANDINGS',
+        'VIEW_BREAKS',
+        'VIEW_TEAM_STANDINGS',
+      ]),
+    },
   ];
 
   for (const roleData of roles) {

@@ -29,11 +29,6 @@ export class UsersService {
   async createUser(dto: CreateUserDto): Promise<ResponseUserDto> {
     const existingUser = await this.userRepo.findOne({
       where: { email: dto.email },
-      relations: {
-        tournamentRoles: {
-          role: true,
-        },
-      },
     });
     if (existingUser)
       throw new BadRequestException('This email is already used!');
@@ -53,13 +48,10 @@ export class UsersService {
     if (!defaultRole)
       throw new Error('Default DEBTER role not seeded properly.');
 
-    const userRole = this.userTournamentRoleRepo.create({
+    await this.userTournamentRoleRepo.save({
       user: savedUser,
       role: defaultRole,
-      // tournament: null,
     });
-
-    await this.userTournamentRoleRepo.save(userRole);
 
     return plainToInstance(ResponseUserDto, savedUser, {
       excludeExtraneousValues: true,
