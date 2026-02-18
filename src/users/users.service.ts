@@ -67,6 +67,15 @@ export class UsersService {
     const findRole = await this.roleRepo.findOne({ where: { id: roleId } });
     if (!findRole) throw new NotFoundException('Role not found!');
 
+    const existingRole = await this.userTournamentRoleRepo.findOne({
+      where: {
+        user: { id: findUser.id },
+        role: { id: findRole.id },
+        // tournamentId: { id },
+      },
+    });
+    if (existingRole) throw new BadRequestException('Role already assigned!');
+
     const setRole = this.userTournamentRoleRepo.create({
       user: findUser,
       role: findRole,
