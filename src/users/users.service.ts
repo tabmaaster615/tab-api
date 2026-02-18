@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/createUserDto.dto';
 import { Role } from './entities/role.entity';
 import { Permission } from './entities/permission.entity';
@@ -14,6 +14,7 @@ import { ResponseUserDto } from './dto/responseUserDto.dto';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { UpdateUserDto } from './dto/updateUserDto.dto';
+import { AssignRoleDto } from './dto/asssignRoleDto.dto';
 
 @Injectable()
 export class UsersService {
@@ -26,14 +27,19 @@ export class UsersService {
     private readonly userTournamentRoleRepo: Repository<UserTournamentRole>,
   ) {}
 
+  // getting full user info with roles
+  private async getFullUserInfo(id: string): Promise<User> {
+    const findUser = await this.userRepo.findOne({
+      where: { id },
+      relations: ['tournamentRoles', 'tournamentRoles.role'],
+    });
+    if (!findUser) throw new NotFoundException('User not found!');
+    return findUser;
+  }
+
   async createUser(dto: CreateUserDto): Promise<ResponseUserDto> {
     const existingUser = await this.userRepo.findOne({
       where: { email: dto.email },
-      relations: {
-        tournamentRoles: {
-          role: true,
-        },
-      },
     });
     if (existingUser)
       throw new BadRequestException('This email is already used!');
@@ -48,50 +54,48 @@ export class UsersService {
 
     // assign default role to newUser
     const defaultRole = await this.roleRepo.findOne({
-      where: { name: 'DEBATER' },
+      where: { name: 'USER' },
     });
-    if (!defaultRole)
-      throw new Error('Default DEBTER role not seeded properly.');
+    if (!defaultRole) throw new Error('Default USER role not seeded properly.');
 
-    const userRole = this.userTournamentRoleRepo.create({
+    await this.userTournamentRoleRepo.save({
       user: savedUser,
       role: defaultRole,
-      // tournament: null,
     });
 
-    await this.userTournamentRoleRepo.save(userRole);
+    const fullUserInfo = await this.getFullUserInfo(savedUser.id);
 
-    const userWithRole = {
-      ...savedUser,
-      roles: savedUser.tournamentRoles.map((tr) => ({
-        name: tr.role.name,
-        // tournamentId: tr.tournamentId,
-      })),
-    };
-
-    return plainToInstance(ResponseUserDto, userWithRole, {
+    return plainToInstance(ResponseUserDto, fullUserInfo, {
       excludeExtraneousValues: true,
     });
   }
 
-  async assignRoleToUser(
-    userId: string,
-    roleId: string,
-  ): Promise<ResponseUserDto> {
-    const findUser = await this.userRepo.findOne({ where: { id: userId } });
+  async assignRoleToUser(dto: AssignRoleDto): Promise<ResponseUserDto> {
+    const findUser = await this.userRepo.findOne({ where: { id: dto.userId } });
     if (!findUser) throw new NotFoundException('User not found!');
 
-    const findRole = await this.roleRepo.findOne({ where: { id: roleId } });
+    const findRole = await this.roleRepo.findOne({ where: { id: dto.roleId } });
     if (!findRole) throw new NotFoundException('Role not found!');
+
+    const existingRole = await this.userTournamentRoleRepo.findOne({
+      where: {
+        user: { id: findUser.id },
+        role: { id: findRole.id },
+        tournamentId: dto.tournamentId === null ? IsNull() : dto.tournamentId,
+      },
+    });
+    if (existingRole) throw new BadRequestException('Role already assigned!');
 
     const setRole = this.userTournamentRoleRepo.create({
       user: findUser,
       role: findRole,
+      tournamentId: dto.tournamentId,
     });
-
     await this.userTournamentRoleRepo.save(setRole);
 
-    return plainToInstance(ResponseUserDto, findUser, {
+    const fullUserInfo = await this.getFullUserInfo(findUser.id);
+
+    return plainToInstance(ResponseUserDto, fullUserInfo, {
       excludeExtraneousValues: true,
     });
   }

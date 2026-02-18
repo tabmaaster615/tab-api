@@ -1,4 +1,5 @@
 import {
+  Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
@@ -10,7 +11,7 @@ import { User } from './user.entity';
 import { Role } from './role.entity';
 
 @Entity('user_tournament_roles')
-@Unique(['user', 'role'])
+@Unique(['user', 'role', 'tournamentId'])
 export class UserTournamentRole {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -25,6 +26,9 @@ export class UserTournamentRole {
 
   // @ManyToOne(() => Tournament, { eager: true, onDelete: 'CASCADE' })
   // tournament: Tournament;
+
+  @Column({ name: 'tournament_id', nullable: true, type: 'varchar' })
+  tournamentId: string | null;
 
   @CreateDateColumn({
     name: 'created_at',
