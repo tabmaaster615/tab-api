@@ -22,6 +22,7 @@ import { UsersService } from './users.service';
 import { ResponseUserDto } from './dto/responseUserDto.dto';
 import { CreateUserDto } from './dto/createUserDto.dto';
 import { UpdateUserDto } from './dto/updateUserDto.dto';
+import { AssignRoleDto } from './dto/asssignRoleDto.dto';
 
 @ApiTags('Users') // Capitalized for better UI presentation
 @Controller('users')
@@ -42,6 +43,22 @@ export class UsersController {
   })
   async createUser(@Body() dto: CreateUserDto): Promise<ResponseUserDto> {
     return await this.usersService.createUser(dto);
+  }
+
+  @Post('assign-role')
+  @ApiOperation({
+    summary: 'Assign a role to a user',
+    description: 'Assigns a role to a user.',
+  })
+  @ApiCreatedResponse({
+    type: ResponseUserDto,
+    description: 'Role assigned successfully.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid input data or role not found.',
+  })
+  async assignRoleToUser(@Body() dto: AssignRoleDto): Promise<ResponseUserDto> {
+    return await this.usersService.assignRoleToUser(dto);
   }
 
   @Get()
