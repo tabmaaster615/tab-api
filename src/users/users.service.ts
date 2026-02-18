@@ -27,6 +27,16 @@ export class UsersService {
     private readonly userTournamentRoleRepo: Repository<UserTournamentRole>,
   ) {}
 
+  // getting full user info with roles
+  private async getFullUserInfo(id: string): Promise<User> {
+    const findUser = await this.userRepo.findOne({
+      where: { id },
+      relations: ['tournamentRoles', 'tournamentRoles.role'],
+    });
+    if (!findUser) throw new NotFoundException('User not found!');
+    return findUser;
+  }
+
   async createUser(dto: CreateUserDto): Promise<ResponseUserDto> {
     const existingUser = await this.userRepo.findOne({
       where: { email: dto.email },
@@ -53,7 +63,9 @@ export class UsersService {
       role: defaultRole,
     });
 
-    return plainToInstance(ResponseUserDto, savedUser, {
+    const fullUserInfo = await this.getFullUserInfo(savedUser.id);
+
+    return plainToInstance(ResponseUserDto, fullUserInfo, {
       excludeExtraneousValues: true,
     });
   }
@@ -81,7 +93,9 @@ export class UsersService {
     });
     await this.userTournamentRoleRepo.save(setRole);
 
-    return plainToInstance(ResponseUserDto, findUser, {
+    const fullUserInfo = await this.getFullUserInfo(findUser.id);
+
+    return plainToInstance(ResponseUserDto, fullUserInfo, {
       excludeExtraneousValues: true,
     });
   }

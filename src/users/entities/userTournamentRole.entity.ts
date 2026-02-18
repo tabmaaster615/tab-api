@@ -11,7 +11,7 @@ import { User } from './user.entity';
 import { Role } from './role.entity';
 
 @Entity('user_tournament_roles')
-@Unique(['user', 'role'])
+@Unique(['user', 'role', 'tournamentId'])
 export class UserTournamentRole {
   @PrimaryGeneratedColumn('uuid')
   id: string;

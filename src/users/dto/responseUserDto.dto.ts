@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { UserRoleResponseDto } from './userRoleResponseDto.dto';
+import { UserTournamentRole } from '../entities/userTournamentRole.entity';
 
 export class ResponseUserDto {
   @ApiProperty({
@@ -34,10 +35,18 @@ export class ResponseUserDto {
   @ApiProperty({
     description: 'User permission level',
     example: 'DEBATER',
+    type: [UserRoleResponseDto],
   })
   @Expose()
-  @Type(() => UserRoleResponseDto)
-  role: UserRoleResponseDto;
+  @Transform(({ value }) => {
+    return (
+      value.tournamentRoles?.map((userTournamentRole) => ({
+        name: userTournamentRole.role.name,
+        tournamentId: userTournamentRole.tournamentId,
+      })) || []
+    );
+  })
+  role: UserRoleResponseDto[];
 
   @ApiProperty({ description: 'Account status', example: true })
   @Expose()
