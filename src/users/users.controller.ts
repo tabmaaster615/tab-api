@@ -6,12 +6,10 @@ import {
   Param,
   Patch,
   Post,
-  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiParam,
   ApiCreatedResponse,
   ApiOkResponse,
@@ -23,6 +21,7 @@ import { ResponseUserDto } from './dto/responseUserDto.dto';
 import { CreateUserDto } from './dto/createUserDto.dto';
 import { UpdateUserDto } from './dto/updateUserDto.dto';
 import { AssignRoleDto } from './dto/asssignRoleDto.dto';
+import { User } from './entities/user.entity';
 
 @ApiTags('Users') // Capitalized for better UI presentation
 @Controller('users')
@@ -85,6 +84,21 @@ export class UsersController {
   @ApiNotFoundResponse({ description: 'User not found.' })
   async findOneUser(@Param('id') id: string): Promise<ResponseUserDto> {
     return await this.usersService.findOneUser(id);
+  }
+
+  @Get('user-permissions/:id')
+  @ApiOperation({ summary: 'Get user with roles and permissions' })
+  @ApiParam({
+    name: 'id',
+    description: 'The unique UUID of the user',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiOkResponse({ type: User })
+  @ApiNotFoundResponse({ description: 'User not found.' })
+  async findUserWithRolesAndPermissions(
+    @Param('id') id: string,
+  ): Promise<User> {
+    return await this.usersService.findUserWithRolesAndPermissions(id);
   }
 
   @Get('email/:email')

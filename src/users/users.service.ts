@@ -61,6 +61,7 @@ export class UsersService {
     await this.userTournamentRoleRepo.save({
       user: savedUser,
       role: defaultRole,
+      tournamentId: null,
     });
 
     const fullUserInfo = await this.getFullUserInfo(savedUser.id);
@@ -86,7 +87,7 @@ export class UsersService {
     });
     if (existingRole) throw new BadRequestException('Role already assigned!');
 
-    const setRole = await this.userTournamentRoleRepo.create({
+    const setRole = this.userTournamentRoleRepo.create({
       user: findUser,
       role: findRole,
       tournamentId: dto.tournamentId,
@@ -104,9 +105,12 @@ export class UsersService {
     const allUsers = await this.userRepo.find();
     if (allUsers.length === 0) throw new BadRequestException('No users found!');
 
-    return allUsers.map((user) =>
-      plainToInstance(ResponseUserDto, user, {
-        excludeExtraneousValues: true,
+    return Promise.all(
+      allUsers.map(async (user) => {
+        const userWithRole = await this.getFullUserInfo(user.id);
+        return plainToInstance(ResponseUserDto, userWithRole, {
+          excludeExtraneousValues: true,
+        });
       }),
     );
   }
@@ -115,16 +119,34 @@ export class UsersService {
     const findUser = await this.userRepo.findOne({ where: { id } });
     if (!findUser) throw new NotFoundException('User not found!');
 
-    return plainToInstance(ResponseUserDto, findUser, {
+    const userWithRole = await this.getFullUserInfo(findUser.id);
+
+    return plainToInstance(ResponseUserDto, userWithRole, {
       excludeExtraneousValues: true,
     });
+  }
+
+  async findUserWithRolesAndPermissions(id: string): Promise<User> {
+    const findUser = await this.userRepo.findOne({
+      where: { id },
+      relations: [
+        'tournamentRoles',
+        'tournamentRoles.role',
+        'tournamentRoles.role.permissions',
+      ],
+    });
+    if (!findUser) throw new NotFoundException('User not found!');
+
+    return findUser;
   }
 
   async findByEmail(email: string): Promise<ResponseUserDto> {
     const findUser = await this.userRepo.findOne({ where: { email } });
     if (!findUser) throw new NotFoundException('User not found!');
 
-    return plainToInstance(ResponseUserDto, findUser, {
+    const userWithRole = await this.getFullUserInfo(findUser.id);
+
+    return plainToInstance(ResponseUserDto, userWithRole, {
       excludeExtraneousValues: true,
     });
   }
