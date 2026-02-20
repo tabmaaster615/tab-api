@@ -27,6 +27,18 @@ export class UsersService {
     private readonly userTournamentRoleRepo: Repository<UserTournamentRole>,
   ) {}
 
+  // permissionBuilder for JWT
+  buildPermissions(user: User): string[] {
+    const permissionsSet = new Set<string>();
+
+    for (const tournamentRole of user.tournamentRoles ?? []) {
+      for (const permission of tournamentRole.role.permissions ?? []) {
+        permissionsSet.add(permission.permissionName);
+      }
+    }
+    return Array.from(permissionsSet);
+  }
+
   // getting full user info with roles
   private async getFullUserInfo(id: string): Promise<User> {
     const findUser = await this.userRepo.findOne({
@@ -102,7 +114,7 @@ export class UsersService {
   }
 
   async findAllUser(): Promise<ResponseUserDto[]> {
-    const allUsers = await this.userRepo.find();
+    const allUsers = await this.userRepo.find({});
     if (allUsers.length === 0) throw new BadRequestException('No users found!');
 
     return Promise.all(
