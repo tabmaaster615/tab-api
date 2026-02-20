@@ -114,26 +114,20 @@ export class UsersService {
   }
 
   async findAllUser(): Promise<ResponseUserDto[]> {
-    const allUsers = await this.userRepo.find({});
-    if (allUsers.length === 0) throw new BadRequestException('No users found!');
+    const allUsers = await this.userRepo.find({
+      relations: ['tournamentRoles', 'tournamentRoles.role'],
+    });
 
-    return Promise.all(
-      allUsers.map(async (user) => {
-        const userWithRole = await this.getFullUserInfo(user.id);
-        return plainToInstance(ResponseUserDto, userWithRole, {
-          excludeExtraneousValues: true,
-        });
-      }),
+    return allUsers.map((user) =>
+      plainToInstance(ResponseUserDto, user, { excludeExtraneousValues: true }),
     );
   }
 
   async findOneUser(id: string): Promise<ResponseUserDto> {
-    const findUser = await this.userRepo.findOne({ where: { id } });
+    const findUser = await this.getFullUserInfo(id);
     if (!findUser) throw new NotFoundException('User not found!');
 
-    const userWithRole = await this.getFullUserInfo(findUser.id);
-
-    return plainToInstance(ResponseUserDto, userWithRole, {
+    return plainToInstance(ResponseUserDto, findUser, {
       excludeExtraneousValues: true,
     });
   }
@@ -153,12 +147,12 @@ export class UsersService {
   }
 
   async findByEmail(email: string): Promise<ResponseUserDto> {
-    const findUser = await this.userRepo.findOne({ where: { email } });
+    const findUser = await this.userRepo.findOne({
+      where: { email },
+    });
     if (!findUser) throw new NotFoundException('User not found!');
 
-    const userWithRole = await this.getFullUserInfo(findUser.id);
-
-    return plainToInstance(ResponseUserDto, userWithRole, {
+    return plainToInstance(ResponseUserDto, findUser, {
       excludeExtraneousValues: true,
     });
   }
@@ -198,5 +192,19 @@ export class UsersService {
 
     await this.userRepo.remove(findUser);
     return { message: 'The user has been deleted successfully!' };
+  }
+
+  async findUserforAuthByEmail(email: string): Promise<User | null> {
+    const userWithPass = await this.userRepo.findOne({
+      where: { email },
+      relations: [
+        'tournamentRoles',
+        'tournamentRoles.role',
+        'tournamentRoles.role.permissions',
+      ],
+    });
+    if (!userWithPass) return null;
+
+    return userWithPass;
   }
 }
