@@ -114,20 +114,20 @@ export class UsersController {
     return await this.usersService.findByEmail(email);
   }
 
-  @Get('user-auth/:email')
-  @ApiOperation({ summary: 'Get user for auth by email' })
-  @ApiParam({
-    name: 'email',
-    description: 'Registered email address',
-    example: 'john.doe@example.com',
-  })
-  @ApiOkResponse({ type: User })
-  @ApiNotFoundResponse({ description: 'No user found with this email.' })
-  async findUserForAuthByEmail(
-    @Param('email') email: string,
-  ): Promise<User | null> {
-    return await this.usersService.findUserforAuthByEmail(email);
-  }
+  // @Get('user-auth/:email')
+  // @ApiOperation({ summary: 'Get user for auth by email' })
+  // @ApiParam({
+  //   name: 'email',
+  //   description: 'Registered email address',
+  //   example: 'john.doe@example.com',
+  // })
+  // @ApiOkResponse({ type: User })
+  // @ApiNotFoundResponse({ description: 'No user found with this email.' })
+  // async findUserForAuthByEmail(
+  //   @Param('email') email: string,
+  // ): Promise<User | null> {
+  //   return await this.usersService.findUserforAuthByEmail(email);
+  // }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update user details' })
