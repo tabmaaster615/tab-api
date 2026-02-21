@@ -129,3 +129,47 @@ C) Design Tournament entity now (so we can properly link UserTournamentRole)
 Tell me one letter.
 
 We move step by step — no rushing — production mindset only 💪
+
+
+
+
+
+
+🔥 Professional Approach (What Real Systems Do)
+
+Most production systems do:
+
+JWT contains:
+
+{
+  sub: userId,
+  email: ...
+  globalRoles: [...]
+}
+
+Then on protected request:
+
+Guard calls:
+
+userHasPermission(userId, permission, tournamentId)
+
+Which checks DB.
+
+Yes, that’s one extra query.
+But it guarantees correctness.
+
+🎯 So What Should Go Into JWT?
+
+Minimal identity information:
+
+{
+  sub: userId,
+  email,
+  isActive
+}
+
+Optional:
+
+Global roles only (if you want minor optimization)
+
+But NOT full permission tree.
