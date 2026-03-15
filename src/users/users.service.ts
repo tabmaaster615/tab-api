@@ -8,7 +8,6 @@ import { User } from './entities/user.entity';
 import { IsNull, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/createUserDto.dto';
 import { Role } from './entities/role.entity';
-import { Permission } from './entities/permission.entity';
 import { UserTournamentRole } from './entities/userTournamentRole.entity';
 import { ResponseUserDto } from './dto/responseUserDto.dto';
 import * as bcrypt from 'bcrypt';
@@ -21,8 +20,6 @@ export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
     @InjectRepository(Role) private readonly roleRepo: Repository<Role>,
-    @InjectRepository(Permission)
-    private readonly permissionRepo: Repository<Permission>,
     @InjectRepository(UserTournamentRole)
     private readonly userTournamentRoleRepo: Repository<UserTournamentRole>,
   ) {}
@@ -49,6 +46,7 @@ export class UsersService {
     return findUser;
   }
 
+  // create user
   async createUser(dto: CreateUserDto): Promise<ResponseUserDto> {
     const existingUser = await this.userRepo.findOne({
       where: { email: dto.email },
@@ -83,6 +81,7 @@ export class UsersService {
     });
   }
 
+  // Assign role to user
   async assignRoleToUser(dto: AssignRoleDto): Promise<ResponseUserDto> {
     const findUser = await this.userRepo.findOne({ where: { id: dto.userId } });
     if (!findUser) throw new NotFoundException('User not found!');
@@ -113,6 +112,7 @@ export class UsersService {
     });
   }
 
+  // Get all users
   async findAllUser(): Promise<ResponseUserDto[]> {
     const allUsers = await this.userRepo.find({
       relations: ['tournamentRoles', 'tournamentRoles.role'],
@@ -123,15 +123,16 @@ export class UsersService {
     );
   }
 
+  // Get user by id
   async findOneUser(id: string): Promise<ResponseUserDto> {
     const findUser = await this.getFullUserInfo(id);
-    if (!findUser) throw new NotFoundException('User not found!');
 
     return plainToInstance(ResponseUserDto, findUser, {
       excludeExtraneousValues: true,
     });
   }
 
+  // Get user with roles and permissions
   async findUserWithRolesAndPermissions(id: string): Promise<User> {
     const findUser = await this.userRepo.findOne({
       where: { id },
@@ -146,6 +147,7 @@ export class UsersService {
     return findUser;
   }
 
+  // Get user by email
   async findByEmail(email: string): Promise<ResponseUserDto> {
     const findUser = await this.userRepo.findOne({
       where: { email },
@@ -157,6 +159,7 @@ export class UsersService {
     });
   }
 
+  // Update user
   async updateUser(id: string, dto: UpdateUserDto): Promise<ResponseUserDto> {
     const findUser = await this.userRepo.findOne({ where: { id } });
     if (!findUser) throw new NotFoundException('User not found!');
@@ -186,6 +189,7 @@ export class UsersService {
     });
   }
 
+  // Delete user
   async deleteUser(id: string): Promise<{ message: string }> {
     const findUser = await this.userRepo.findOne({ where: { id } });
     if (!findUser) throw new NotFoundException('User not found!');
@@ -194,7 +198,8 @@ export class UsersService {
     return { message: 'The user has been deleted successfully!' };
   }
 
-  async findUserforAuthByEmail(email: string): Promise<User | null> {
+  // Get user for auth by email
+  async findUserForAuthByEmail(email: string): Promise<User | null> {
     const userWithPass = await this.userRepo.findOne({
       where: { email },
       relations: [
