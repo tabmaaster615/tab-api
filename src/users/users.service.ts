@@ -56,10 +56,9 @@ export class UsersService {
 
     const hashedPassword = await bcrypt.hash(dto.password, 12);
 
-    const newUser = this.userRepo.create({
-      ...dto,
-      password: hashedPassword,
-    });
+    const newUser = this.userRepo.create(dto);
+    newUser.password = hashedPassword;
+
     const savedUser = await this.userRepo.save(newUser);
 
     // assign default role to newUser
