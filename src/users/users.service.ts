@@ -199,14 +199,14 @@ export class UsersService {
 
   // Get user for auth by email
   async findUserForAuthByEmail(email: string): Promise<User | null> {
-    const userWithPass = await this.userRepo.findOne({
-      where: { email },
-      relations: [
-        'tournamentRoles',
-        'tournamentRoles.role',
-        'tournamentRoles.role.permissions',
-      ],
-    });
+    const userWithPass = await this.userRepo
+      .createQueryBuilder('user')
+      .addSelect(['user.password'])
+      .where({ email })
+      .leftJoinAndSelect('user.tournamentRoles', 'tournamentRoles')
+      .leftJoinAndSelect('tournamentRoles.role', 'role')
+      .leftJoinAndSelect('role.permissions', 'permissions')
+      .getOne();
     if (!userWithPass) return null;
 
     return userWithPass;
