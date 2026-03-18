@@ -22,10 +22,10 @@ import authConfig from './auth.config';
         DATABASE_URL: Joi.string().required(),
         DATABASE_SSL: Joi.boolean().default(false),
 
-        JWT_ACCESS_SECRET: Joi.string().required(),
-        JWT_ACCESS_EXPIRES_IN: Joi.string().default('15m'),
+        JWT_SECRET: Joi.string().required(),
+        JWT_SECRET_EXPIRES_IN: Joi.string().default('15m'),
         JWT_REFRESH_SECRET: Joi.string().required(),
-        JWT_REFRESH_EXPIRES_IN: Joi.string().default('3d'),
+        JWT_REFRESH_SECRET_EXPIRES_IN: Joi.string().default('3d'),
       }),
     }),
   ],
